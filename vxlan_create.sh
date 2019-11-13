@@ -1,8 +1,8 @@
 #/bin/bash
 
-if [ $# -lt 3 ]
+if [ $# -lt 2 ]
 then
-  echo "Usage: vxlan.sh <HOST_INTERFACE> <VXLAN_IP/PREFIX> <REMOTE_HOSTs_IP>"
+  echo "Usage: vxlan.sh <VXLAN_IP/PREFIX> <REMOTE_HOSTs_IP>"
   exit 1
 fi
 
@@ -21,16 +21,16 @@ fi
 VXLAN_PORT=4789
 
 # Create Vxlan Interface
-ip link add $VXLAN_INTERFACE type vxlan id $VXLAN_ID dev $1 dstport $VXLAN_PORT
+ip link add $VXLAN_INTERFACE type vxlan id $VXLAN_ID dstport $VXLAN_PORT
 
 # Append FDB Bridge
-for ip in "${@:3}"
+for ip in "${@:2}"
 do
   bridge fdb append to 00:00:00:00:00:00 dst $ip dev $VXLAN_INTERFACE
 done
 
 # Set IP-address for Vxlan Interface
-ip addr add $2 dev $VXLAN_INTERFACE
+ip addr add $1 dev $VXLAN_INTERFACE
 
 # Set Vxlan Interface to UP
 ip link set $VXLAN_INTERFACE up
